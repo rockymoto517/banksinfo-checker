@@ -71,7 +71,6 @@ AllBanksInfo get_banks_info(const std::string &path) {
     }
 
     f.seekg(u_offset);
-
     SoundLookups sl{};
     for (int i = 0; i < u_count; ++i) {
         std::uint64_t hash;
@@ -99,5 +98,17 @@ AllBanksInfo get_banks_info(const std::string &path) {
             std::to_string(id) != s ? s : "", ids
         };
     }
-    return AllBanksInfo{ sl, s };
+
+    f.seekg(0, std::ios_base::end);
+    return AllBanksInfo{ sl,
+                         s,
+                         {
+                             static_cast<std::uint64_t>(f.tellg()),
+                             bnk_count,
+                             bnk_offset,
+                             sound_count,
+                             sound_offset,
+                             u_count,
+                             u_offset,
+                         } };
 }
