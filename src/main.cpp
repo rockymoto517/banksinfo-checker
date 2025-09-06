@@ -1,58 +1,14 @@
 #include "banksinfo.hpp"
+#include "flags.hpp"
 
 #include <cstdlib>
-#include <cstring>
 #include <print>
-#include <string_view>
 
-static bool banks = true;
-static bool lookups = true;
-static bool debug = false;
-static std::string file{};
-
-void print_help(std::string_view prog) {
-    std::print("Usage: {} <options> <.banksinfo file>\n", prog);
-    std::print("Options:\n"
-               "\t-b:\tDon't show banks\n"
-               "\t-l:\tDon't show lookups\n"
-               "\t-d:\tShow metadata\n"
-               "\t-D:\tOnly show metadata (equivalent to -bld)\n"
-               "\t-h:\tShow this help message again\n");
-}
-
-void get_flags(int argc, char **argv) {
-    for (int i = 1; i < argc; ++i) {
-        if (argv[i][0] == '-') {
-            for (int j = 1; j < strlen(argv[i]); ++j) {
-                switch (argv[i][j]) {
-                    case 'b': {
-                        banks = false;
-                        break;
-                    }
-                    case 'l': {
-                        lookups = false;
-                        break;
-                    }
-                    case 'D': {
-                        banks = false;
-                        lookups = false;
-                    }
-                    case 'd': {
-                        debug = true;
-                        break;
-                    }
-                    case 'h':
-                    default: {
-                        print_help(argv[0]);
-                        std::exit(EXIT_SUCCESS);
-                    }
-                }
-            }
-        } else {
-            file = argv[i];
-        }
-    }
-}
+bool banks{ true };
+bool lookups{ true };
+bool debug{ false };
+bool unused{ false };
+std::string file{};
 
 int main(int argc, char **argv) {
     if (argc > 1) {
@@ -77,6 +33,15 @@ int main(int argc, char **argv) {
             for (const auto &s : b.soundbanks) {
                 std::print("\t{}\n", s);
             }
+        }
+
+        if (unused) {
+            std::print("\nUsed bytes:\n");
+            for (const auto &p : visited) {
+                std::print("\t{:#08x}, {:#08x}\n", std::get<0>(p),
+                           std::get<1>(p));
+            }
+            std::print("\n\tEOF: {:#08x}\n", b.metadata.file_size);
         }
 
         if (debug) {

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -20,5 +22,7 @@ struct AllBanksInfo {
         std::uint32_t sound_lookups_offset;
     } metadata;
 };
+
+extern std::vector<std::pair<std::uint64_t, std::uint64_t>> visited;
 
 AllBanksInfo get_banks_info(const std::string &);
